@@ -1,7 +1,67 @@
 ﻿@page "/"
+@using System.Numerics
+@using System.Text.Json
+@using static FourierExperiments.Services.DiscreteFourierTransform
+@inject IJSRuntime JS
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Fourier Experiments</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
-<MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
+@*<MudText Typo="Typo.h3" GutterBottom="true" Style="padding-top: 42px;">Hello, Fourier!</MudText>*@
+
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText>Saw wave</MudText>
+        <canvas id="visualizeFourierSawCanvas" class="fourierCanvas" width=800 height=400></canvas>
+
+        <MudSlider Value=@SawSliderValue @onchange="SawSliderValueOnChange" Class="sineSlider" />
+        <MudText Typo="Typo.h6" GutterBottom="true">Sinewaves: @SawSliderValue</MudText>
+    </MudCardContent>
+</MudCard>
+
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText>Square wave</MudText>
+        <canvas id="visualizeFourierSquareCanvas" class="fourierCanvas" width=800 height=400></canvas>
+
+        <MudSlider Value=@SquareSliderValue @onchange="SquareSliderValueOnChange" Class="sineSlider" />
+        <MudText Typo="Typo.h6" GutterBottom="true">
+            Sinewaves: @SquareSliderValue
+        </MudText>
+    </MudCardContent>
+</MudCard>
+
+@*<canvas id="visualizeFourierSignalDrawCanvas" width=800 height=400></canvas>*@
+
+
+@code {
+
+    List<double> signal = new() { 100, 100, 100, 100, -100, -100, -100, -100};
+
+    int SawSliderValue = 42;
+    int SquareSliderValue = 42;
+
+    private void SawSliderValueOnChange(ChangeEventArgs args)
+    {
+        SawSliderValue = Convert.ToInt32((String)args.Value);
+        JS.InvokeVoidAsync("sawSliderOnChange", SawSliderValue);
+    }
+
+    private void SquareSliderValueOnChange(ChangeEventArgs args)
+    {
+        SquareSliderValue = Convert.ToInt32((String)args.Value);
+        JS.InvokeVoidAsync("squareSliderValueOnChange", SquareSliderValue);
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("visualizeFourierSaw", "visualizeFourierSawCanvas", SawSliderValue);
+            await JS.InvokeVoidAsync("visualizeFourierSquare", "visualizeFourierSquareCanvas", SquareSliderValue);
+            //await JS.InvokeVoidAsync("visualizeFourierSignalDraw", "visualizeFourierSignalDrawCanvas", JsonSerializer.Serialize<List<FourierY>>(Transform(signal)));
+        }
+    }
+}
+
+
