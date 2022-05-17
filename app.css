@@ -1,0 +1,21 @@
+﻿*{
+    text-align: center;
+}
+
+.fourierCanvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    background-color: black;
+}
+
+.mud-slider {
+    width: 800px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
